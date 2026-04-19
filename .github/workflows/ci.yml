@@ -7,11 +7,21 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  APP_NAME: Primary
+
 jobs:
   lint:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Show workflow context
+        run: |
+          echo "App: ${{ env.APP_NAME }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit SHA: ${{ github.sha }}"
+
       - name: Checkout code
         uses: actions/checkout@v5
 
@@ -34,6 +44,13 @@ jobs:
     needs: lint
 
     steps:
+      - name: Show workflow context
+        run: |
+          echo "App: ${{ env.APP_NAME }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit SHA: ${{ github.sha }}"
+
       - name: Checkout code
         uses: actions/checkout@v5
 
@@ -56,6 +73,13 @@ jobs:
     needs: [lint, test]
 
     steps:
+      - name: Show workflow context
+        run: |
+          echo "App: ${{ env.APP_NAME }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit SHA: ${{ github.sha }}"
+
       - name: Checkout code
         uses: actions/checkout@v5
 
