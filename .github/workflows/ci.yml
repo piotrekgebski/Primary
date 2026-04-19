@@ -110,7 +110,7 @@ jobs:
           echo "event=${{ github.event_name }}" >> build-output/build-info.txt
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: primary-build
           path: build-output
