@@ -7,28 +7,27 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   APP_NAME: Primary
+  PYTHON_VERSION: "3.11"
 
 jobs:
   lint:
+    name: Lint
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      - name: Show workflow context
-        run: |
-          echo "App: ${{ env.APP_NAME }}"
-          echo "Event: ${{ github.event_name }}"
-          echo "Branch: ${{ github.ref_name }}"
-          echo "Commit SHA: ${{ github.sha }}"
-
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
           cache-dependency-path: requirements.txt
 
@@ -37,28 +36,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run lint
+      - name: Run Ruff
         run: ruff check .
 
   test:
+    name: Test
     runs-on: ubuntu-latest
     needs: lint
+    timeout-minutes: 10
 
     steps:
-      - name: Show workflow context
-        run: |
-          echo "App: ${{ env.APP_NAME }}"
-          echo "Event: ${{ github.event_name }}"
-          echo "Branch: ${{ github.ref_name }}"
-          echo "Commit SHA: ${{ github.sha }}"
-
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
           cache-dependency-path: requirements.txt
 
@@ -67,28 +61,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run tests
+      - name: Run pytest
         run: python -m pytest -q
 
   build:
+    name: Build
     runs-on: ubuntu-latest
     needs: [lint, test]
+    timeout-minutes: 10
 
     steps:
-      - name: Show workflow context
-        run: |
-          echo "App: ${{ env.APP_NAME }}"
-          echo "Event: ${{ github.event_name }}"
-          echo "Branch: ${{ github.ref_name }}"
-          echo "Commit SHA: ${{ github.sha }}"
-
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: "3.11"
+          python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
           cache-dependency-path: requirements.txt
 
@@ -97,7 +86,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Verify app imports
+      - name: Show build metadata
+        run: |
+          echo "App: $APP_NAME"
+          echo "Event: ${{ github.event_name }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit SHA: ${{ github.sha }}"
+
+      - name: Verify app import
         run: python -c "from main import app; print('Build check OK')"
 
       - name: Compile Python files
@@ -108,6 +104,7 @@ jobs:
           mkdir -p build-output
           cp main.py requirements.txt pyproject.toml build-output/
           echo "app=${{ env.APP_NAME }}" > build-output/build-info.txt
+          echo "python_version=${{ env.PYTHON_VERSION }}" >> build-output/build-info.txt
           echo "branch=${{ github.ref_name }}" >> build-output/build-info.txt
           echo "sha=${{ github.sha }}" >> build-output/build-info.txt
           echo "event=${{ github.event_name }}" >> build-output/build-info.txt
