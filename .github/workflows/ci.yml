@@ -188,4 +188,16 @@ jobs:
               --restart unless-stopped \
               -p 8000:8000 \
               ghcr.io/piotrekgebski/primary-app:latest
-            curl --fail http://localhost:8000/health          
+
+            for i in {1..10}; do
+              if curl --fail http://localhost:8000/health; then
+                exit 0
+              fi
+              echo "Health check failed, retrying in 3 seconds..."
+              sleep 3
+            done
+
+            echo "Application did not become healthy in time"
+            docker ps -a
+            docker logs primary-staging-app
+            exit 1
