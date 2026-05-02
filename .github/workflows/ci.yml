@@ -178,7 +178,6 @@ jobs:
           username: ${{ secrets.STAGING_USER }}
           key: ${{ secrets.STAGING_SSH_KEY }}
           port: ${{ secrets.STAGING_PORT }}
-#         fingerprint: ${{ secrets.STAGING_SSH_FINGERPRINT }}
           command_timeout: 15m
           script: |
             docker pull ghcr.io/piotrekgebski/primary-app:latest
