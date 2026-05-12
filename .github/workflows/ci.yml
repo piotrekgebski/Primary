@@ -213,20 +213,13 @@ jobs:
       url: http://192.168.50.250:8000
 
     steps:
-      - name: Deploy over SSH
-        uses: appleboy/ssh-action@v1.2.5
-        with:
-          host: ${{ secrets.STAGING_HOST }}
-          username: ${{ secrets.STAGING_USER }}
-          key: ${{ secrets.STAGING_SSH_KEY }}
-          port: ${{ secrets.STAGING_PORT }}
-          command_timeout: 15m
-          script: |
+      - name: Deploy locally on T530
+        run:
             docker pull ghcr.io/piotrekgebski/primary-app:latest
-            docker stop primary-staging-app || true
-            docker rm primary-staging-app || true
+            docker stop primary-t530-app || true
+            docker rm primary-t530-app || true
             docker run -d \
-              --name primary-staging-app \
+              --name primary-t530-app \
               --restart unless-stopped \
               -p 8000:8000 \
               ghcr.io/piotrekgebski/primary-app:latest
