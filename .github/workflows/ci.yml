@@ -201,3 +201,45 @@ jobs:
             docker ps -a
             docker logs primary-staging-app
             exit 1
+
+  deploy-T530:
+    name: Deploy to T530
+    runs-on: self-hosted
+    needs: docker-build
+    if: github.event_name == 'push' && github.ref_name == 'main'
+    timeout-minutes: 15
+    environment:
+      name: T530
+      url: http://192.168.50.250:8000
+
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.5
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          port: ${{ secrets.STAGING_PORT }}
+          command_timeout: 15m
+          script: |
+            docker pull ghcr.io/piotrekgebski/primary-app:latest
+            docker stop primary-staging-app || true
+            docker rm primary-staging-app || true
+            docker run -d \
+              --name primary-staging-app \
+              --restart unless-stopped \
+              -p 8000:8000 \
+              ghcr.io/piotrekgebski/primary-app:latest
+
+            for i in {1..10}; do
+              if curl --fail http://localhost:8000/health; then
+                exit 0
+              fi
+              echo "Health check failed, retrying in 3 seconds..."
+              sleep 3
+            done
+
+            echo "Application did not become healthy in time"
+            docker ps -a
+            docker logs primary-staging-app
+            exit 1
