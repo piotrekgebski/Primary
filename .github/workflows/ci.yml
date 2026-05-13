@@ -216,11 +216,11 @@ jobs:
       - name: Deploy locally on T530
         run: |
             docker pull ghcr.io/piotrekgebski/primary-app:latest
-            docker stop primary-T530-app || true
-            docker rm primary-T530-app || true
+            docker stop primary-t530-app || true
+            docker rm primary-t530-app || true
             
             docker run -d \
-              --name primary-T530-app \
+              --name primary-t530-app \
               --restart unless-stopped \
               -p 8000:8000 \
               ghcr.io/piotrekgebski/primary-app:latest
