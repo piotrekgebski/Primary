@@ -9,7 +9,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 env:
   APP_NAME: Primary
@@ -123,7 +122,9 @@ jobs:
     needs: build
     timeout-minutes: 20
     if: github.event_name == 'push' && github.ref_name == 'main'
-
+    permissions:
+      contents: read
+      packages: write
     env:
       REGISTRY: ghcr.io
       IMAGE_NAME: ghcr.io/piotrekgebski/primary-app
@@ -174,10 +175,10 @@ jobs:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.5
         with:
-          host: ${{ secrets.STAGING_HOST }}
-          username: ${{ secrets.STAGING_USER }}
+          host: ${{ vars.STAGING_HOST }}
+          username: ${{ vars.STAGING_USER }}
           key: ${{ secrets.STAGING_SSH_KEY }}
-          port: ${{ secrets.STAGING_PORT }}
+          port: ${{ vars.STAGING_PORT }}
           command_timeout: 15m
           script: |
             docker pull ghcr.io/piotrekgebski/primary-app:latest
