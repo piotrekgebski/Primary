@@ -9,7 +9,7 @@ on:
 
 permissions:
   contents: read
-# packages: write
+  packages: write
 
 env:
   APP_NAME: Primary
@@ -123,9 +123,7 @@ jobs:
     needs: build
     timeout-minutes: 20
     if: github.event_name == 'push' && github.ref_name == 'main'
-    permissions:
-      contents: read
-      packages: write
+
     env:
       REGISTRY: ghcr.io
       IMAGE_NAME: ghcr.io/piotrekgebski/primary-app
