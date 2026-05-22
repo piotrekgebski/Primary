@@ -238,6 +238,18 @@ jobs:
             docker ps -a
             docker logs primary-staging-app
             exit 1
+
+  smoke-test:
+    name: Smoke Test from T530
+    runs-on: [self-hosted, Linux, X64]
+    needs: deploy-staging
+    if: github.event_name == 'push' && github.ref_name == 'main'
+    timeout-minutes: 10
+    environment:
+      name: staging
+      url: ${{ vars.STAGING_URL }} 
+
+    steps:     
       - name: Run external smoke test from T530
         run: |
           for i in {1..10}; do
