@@ -205,7 +205,7 @@ jobs:
       - name: Run external smoke test
         run: |
           for i in {1..10}; do
-            if curl --fail "${{ vars.STAGING_URL }}/health"; then
+            if curl --fail --connect-timeout 3 --max-time 5 "${{ vars.STAGING_URL }}/health"; then
               exit 0
             fi
             echo "External smoke test failed, retrying in 5 seconds..."
@@ -250,3 +250,15 @@ jobs:
             docker ps -a
             docker logs primary-staging-app
             exit 1
+      - name: Run external smoke test
+        run: |
+          for i in {1..10}; do
+            if curl --fail "${{ vars.STAGING_URL }}/health"; then
+              exit 0
+            fi
+            echo "External smoke test failed, retrying in 5 seconds..."
+            sleep 5
+          done
+
+          echo "Staging is not reachable from outside"
+          exit 1            
