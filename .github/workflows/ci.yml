@@ -181,27 +181,17 @@ jobs:
           port: ${{ vars.STAGING_PORT }}
           command_timeout: 15m
           script: |
-            IMAGE_REF="ghcr.io/piotrekgebski/primary-app:sha-${{ github.sha }}"
-            STATE_DIR="/opt/primary/rollback"
-
-            mkdir -p "$STATE_DIR"
-
-            if docker ps -a --format '{{.Names}}' | grep -q '^primary-staging-app$'; then
-              docker inspect --format='{{.Config.Image}}' primary-staging-app > "$STATE_DIR/previous_image"
-            fi
-
-            docker pull "$IMAGE_REF"
+            docker pull ghcr.io/piotrekgebski/primary-app:latest
             docker stop primary-staging-app || true
             docker rm primary-staging-app || true
             docker run -d \
               --name primary-staging-app \
               --restart unless-stopped \
               -p 8000:8000 \
-              "$IMAGE_REF"
+              ghcr.io/piotrekgebski/primary-app:latest
 
             for i in {1..10}; do
               if curl --fail http://localhost:8000/health; then
-                echo "$IMAGE_REF" > "$STATE_DIR/current_image"
                 exit 0
               fi
               echo "Health check failed, retrying in 3 seconds..."
