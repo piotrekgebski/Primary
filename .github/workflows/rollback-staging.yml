@@ -31,7 +31,7 @@ jobs:
           command_timeout: 15m
           script: |
             IMAGE_REF="${{ inputs.image_ref }}"
-            STATE_DIR="/opt/primary/rollback"
+            STATE_DIR="$HOME/primary/rollback"
 
             mkdir -p "$STATE_DIR"
             docker pull "$IMAGE_REF"

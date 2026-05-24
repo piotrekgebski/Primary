@@ -150,7 +150,7 @@ jobs:
           images: ${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest
-            type=sha,prefix=sha-
+            type=sha,prefix=sha-,format=long
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
@@ -182,7 +182,7 @@ jobs:
           command_timeout: 15m
           script: |
             IMAGE_REF="ghcr.io/piotrekgebski/primary-app:sha-${{ github.sha }}"
-            STATE_DIR="/opt/primary/rollback"
+            STATE_DIR="$HOME/primary/rollback"
 
             mkdir -p "$STATE_DIR"
 
