@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: primary-app
+  namespace: primary
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: primary-app
+  template:
+    metadata:
+      labels:
+        app: primary-app
+    spec:
+      containers:
+        - name: primary-app
+          image: ghcr.io/piotrekgebski/primary-app:latest
+          ports:
+            - containerPort: 8000

@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from prometheus_fastapi_instrumentator import Instrumentator
 
 app = FastAPI()
 
@@ -31,3 +32,6 @@ def create_item(item: Item):
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
+
+#Monitoring prometheus
+Instrumentator().instrument(app).expose(app)
