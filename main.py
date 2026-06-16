@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 from prometheus_fastapi_instrumentator import Instrumentator
+from pydantic import BaseModel
 
 app = FastAPI()
 
