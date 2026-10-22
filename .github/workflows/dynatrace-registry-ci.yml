@@ -1,0 +1,33 @@
+name: Dynatrace Registry CI
+
+on:
+  push:
+    paths:
+      - 'dynatrace-registry/**'
+      - '.github/workflows/dynatrace-registry-ci.yml'
+  pull_request:
+    paths:
+      - 'dynatrace-registry/**'
+      - '.github/workflows/dynatrace-registry-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-registry:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r dynatrace-registry/requirements.txt pytest
+      - name: Compile script
+        run: python -m py_compile dynatrace-registry/sync_services.py
+      - name: Run offline tests
+        run: python -m pytest -q dynatrace-registry/tests
