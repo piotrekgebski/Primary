@@ -1,0 +1,23 @@
+[Unit]
+Description=Dynatrace Classic Services inventory synchronization
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=dynatrace-registry
+Group=dynatrace-registry
+WorkingDirectory=/opt/dynatrace-services-registry
+EnvironmentFile=/etc/dynatrace-services-registry.env
+Environment=DT_OUTPUT_DIR=/var/lib/dynatrace-services-registry
+ExecStart=/opt/dynatrace-services-registry/.venv/bin/python /opt/dynatrace-services-registry/sync_services.py
+StateDirectory=dynatrace-services-registry
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+TimeoutStartSec=10min
